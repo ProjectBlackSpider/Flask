@@ -1,19 +1,34 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main  # Replace with the branch name that should trigger the pipeline
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+- job: Build
+  displayName: 'Build and Test'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      pytest
+    displayName: 'Build, Install Dependencies, and Run Tests'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- job: Deploy
+  displayName: 'Deploy to Azure Web App'
+  dependsOn: Build
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+  - script: |
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      az webapp up --name <webapp-name> --resource-group <resource-group-name> --plan <app-service-plan-name> --location <azure-region>
+    displayName: 'Deploy to Azure Web App'
