@@ -9,6 +9,13 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - task:AzureCLI@2
+    displayName: 'Azure Login'
+    inputs:
+      azureSubscription: ''
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az login'
   - script: |
       python3 -m venv venv
       source venv/bin/activate
