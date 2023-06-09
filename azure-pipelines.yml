@@ -30,5 +30,6 @@ jobs:
       python3 -m venv venv
       source venv/bin/activate
       pip install -r requirements.txt
+      az login
       az webapp up --name app.py --resource-group test --plan flask --location west-region
     displayName: 'Deploy to Azure Web App'
